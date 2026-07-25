@@ -1,0 +1,171 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Food Waste Redistribution Platform REST API",
+    "version": "1.0.0",
+    "description": "Production-ready administrative, authentication, claim workflows, donor and tracking telemetry REST APIs schemas and mock parameters specifications."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000/api",
+      "description": "Local development server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "full_name": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "role": { "type": "string", "enum": ["ADMIN", "DONOR", "NGO", "VOLUNTEER"] },
+          "status": { "type": "string", "enum": ["ACTIVE", "INACTIVE", "BLOCKED"] }
+        }
+      },
+      "Donation": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "food_name": { "type": "string" },
+          "quantity": { "type": "number" },
+          "quantity_unit": { "type": "string" },
+          "expiry_time": { "type": "string", "format": "date-time" },
+          "status": { "type": "string", "enum": ["AVAILABLE", "REQUESTED", "APPROVED", "DELIVERED", "EXPIRED", "CANCELLED"] }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "summary": "Register a new user account",
+        "tags": ["Authentication"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "full_name": { "type": "string" },
+                  "email": { "type": "string" },
+                  "password": { "type": "string" },
+                  "role": { "type": "string", "enum": ["DONOR", "NGO", "VOLUNTEER"] }
+                },
+                "required": ["full_name", "email", "password", "role"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User successfully registered"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Authenticate user session",
+        "tags": ["Authentication"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string" },
+                  "password": { "type": "string" }
+                },
+                "required": ["email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful. Returns access tokens"
+          }
+        }
+      }
+    },
+    "/donations": {
+      "post": {
+        "summary": "Create surplus food donation listing",
+        "tags": ["Donation Module"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "food_name": { "type": "string" },
+                  "food_category": { "type": "string" },
+                  "food_type": { "type": "string" },
+                  "quantity": { "type": "number" },
+                  "quantity_unit": { "type": "string" },
+                  "expiry_time": { "type": "string" },
+                  "pickup_address": { "type": "string" },
+                  "pickup_latitude": { "type": "number" },
+                  "pickup_longitude": { "type": "number" }
+                },
+                "required": ["food_name", "quantity", "quantity_unit", "expiry_time"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Donation created successfully"
+          }
+        }
+      },
+      "get": {
+        "summary": "Get matching food listings matching search filters",
+        "tags": ["Donation Module"],
+        "responses": {
+          "200": {
+            "description": "Listings retrieved"
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Retrieve application health check status",
+        "tags": ["Monitoring"],
+        "responses": {
+          "200": {
+            "description": "Database and socket services UP and running."
+          }
+        }
+      }
+    },
+    "/metrics": {
+      "get": {
+        "summary": "Monitor Node performance parameters",
+        "tags": ["Monitoring"],
+        "responses": {
+          "200": {
+            "description": "Memory RSS usage load stats."
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "short_name": "FoodSaver",
+  "name": "Food Waste Redistribution Platform",
+  "icons": [
+    {
+      "src": "/src/assets/logo.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#09090B",
+  "theme_color": "#4F46E5",
+  "display": "standalone",
+  "orientation": "portrait"
+}

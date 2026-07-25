@@ -1,0 +1,569 @@
+{
+  "info": {
+    "_postman_id": "9dd9a3f2-1fb8-4171-8bc6-a9ea9bb0022c",
+    "name": "Food Waste Redistribution Platform - Volunteer Module",
+    "description": "Integration testing API endpoints for the Volunteer Profile completion, Status Toggles, Nearby Assignments acceptance/rejection, Workflows state changes, Proof uploads, recipient signatures and telemetry tracking.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Volunteer Profile",
+      "item": [
+        {
+          "name": "Get Profile details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/volunteer/profile",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "volunteer",
+                "profile"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Complete / Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vehicle_type\": \"Bike\",\n  \"vehicle_number\": \"WA-8899-77\",\n  \"driving_license_number\": \"DL-VOL-Seattle-44\",\n  \"phone\": \"+15550200\",\n  \"emergency_contact\": \"+15550299\",\n  \"operating_radius\": 12.0,\n  \"current_address\": \"456 Pine Ave\",\n  \"city\": \"Seattle\",\n  \"state\": \"WA\",\n  \"country\": \"USA\",\n  \"latitude\": 47.6062,\n  \"longitude\": -122.3321\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/volunteer/profile",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "volunteer",
+                "profile"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Toggle Online Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"online_status\": \"ONLINE\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/volunteer/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "volunteer",
+                "status"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Profile Location",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"latitude\": 47.6080,\n  \"longitude\": -122.3350\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/volunteer/location",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "volunteer",
+                "location"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Dashboard Data",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/volunteer/dashboard",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "volunteer",
+                "dashboard"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Assignments",
+      "item": [
+        {
+          "name": "List Available assignments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/assignments",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "assignments"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Accept Assignment",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/assignments/{{delivery_id}}/accept",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "assignments",
+                "{{delivery_id}}",
+                "accept"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Reject Assignment",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/assignments/{{delivery_id}}/reject",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "assignments",
+                "{{delivery_id}}",
+                "reject"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Deliveries Workflow",
+      "item": [
+        {
+          "name": "Get Active Deliveries list",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/deliveries",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "deliveries"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Start Transit to Donor",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/deliveries/{{delivery_id}}/start",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "deliveries",
+                "{{delivery_id}}",
+                "start"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Upload Pickup Proof Image",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "photo",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/deliveries/{{delivery_id}}/pickup-images",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "deliveries",
+                "{{delivery_id}}",
+                "pickup-images"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Confirm Food Pickup Completed",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"latitude\": 47.6062,\n  \"longitude\": -122.3321,\n  \"photoUrl\": \"https://cloudinary.com/pickups/proof123.jpg\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/deliveries/{{delivery_id}}/pickup",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "deliveries",
+                "{{delivery_id}}",
+                "pickup"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Arrived At NGO Destination",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/deliveries/{{delivery_id}}/arrived",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "deliveries",
+                "{{delivery_id}}",
+                "arrived"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Upload Delivery Proof Image",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "photo",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/deliveries/{{delivery_id}}/delivery-images",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "deliveries",
+                "{{delivery_id}}",
+                "delivery-images"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Upload Recipient Signature URL",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"signature\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/deliveries/{{delivery_id}}/signature",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "deliveries",
+                "{{delivery_id}}",
+                "signature"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Complete Delivery Task",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"latitude\": 47.6101,\n  \"longitude\": -122.3421,\n  \"delivery_notes\": \"Delivered safely, items placed in cool storage room.\",\n  \"photoUrl\": \"https://cloudinary.com/deliveries/proof123.jpg\",\n  \"signatureUrl\": \"https://cloudinary.com/signatures/sig123.png\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/deliveries/{{delivery_id}}/complete",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "deliveries",
+                "{{delivery_id}}",
+                "complete"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Telemetry Tracking",
+      "item": [
+        {
+          "name": "Send Telemetry Update",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deliveryId\": \"{{delivery_id}}\",\n  \"latitude\": 47.6080,\n  \"longitude\": -122.3350\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/location/update",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "location",
+                "update"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Location History logs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/location/{{delivery_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "location",
+                "{{delivery_id}}"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "JWT_TOKEN_HERE",
+      "type": "string"
+    },
+    {
+      "key": "delivery_id",
+      "value": "DELIVERY_UUID_HERE",
+      "type": "string"
+    }
+  ]
+}

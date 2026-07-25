@@ -1,0 +1,492 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ====================================================
+// ENUMS
+// ====================================================
+
+enum UserRole {
+  ADMIN
+  DONOR
+  NGO
+  VOLUNTEER
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  BLOCKED
+}
+
+enum FoodType {
+  VEG
+  NON_VEG
+  VEGAN
+  OTHER
+}
+
+enum DonationStatus {
+  AVAILABLE
+  REQUESTED
+  APPROVED
+  PICKED_UP
+  DELIVERED
+  EXPIRED
+  CANCELLED
+}
+
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  ASSIGNED
+  PICKED_UP
+  DELIVERED
+  CANCELLED
+}
+
+enum DeliveryStatus {
+  ASSIGNED
+  ACCEPTED
+  ON_THE_WAY_TO_PICKUP
+  ARRIVED_AT_PICKUP
+  PICKED_UP
+  IN_TRANSIT
+  ARRIVED_AT_DESTINATION
+  DELIVERED
+  FAILED
+  CANCELLED
+}
+
+enum NotificationType {
+  SYSTEM
+  EMAIL
+  WARNING
+  SUCCESS
+  INFO
+  }
+
+enum NgoStatus {
+  PENDING
+  UNDER_REVIEW
+  VERIFIED
+  REJECTED
+  SUSPENDED
+}
+
+// ====================================================
+// MODELS
+// ====================================================
+
+model users {
+  id             String     @id @default(uuid())
+  full_name      String
+  email          String     @unique(map: "uq_users_email")
+  phone          String     @unique(map: "uq_users_phone")
+  password       String
+  role           UserRole
+  status         UserStatus @default(ACTIVE)
+  profile_image  String?
+  address        String?
+  city           String?
+  state          String?
+  country        String?
+  latitude       Float?
+  longitude      Float?
+  email_verified             Boolean    @default(false)
+  last_login                 DateTime?
+  verification_token         String?    @unique(map: "uq_users_verification_token")
+  verification_token_expiry  DateTime?
+  reset_token                String?    @unique(map: "uq_users_reset_token")
+  reset_token_expiry         DateTime?
+
+  // Standard Audit Fields
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+  created_by String?
+  updated_by String?
+
+  // Relations
+  food_donations food_donations[]
+  ngos           ngos?
+  volunteers     volunteers?
+  notifications  notifications[]
+  complaints     complaints[]
+  audit_logs     audit_logs[]
+  refresh_tokens refresh_tokens[]
+
+  // Indexes
+  @@index([status], map: "idx_users_status")
+  @@index([role], map: "idx_users_role")
+  @@index([created_at], map: "idx_users_created_at")
+}
+
+model food_donations {
+  id                   String         @id @default(uuid())
+  donor_id             String
+  food_name            String
+  food_category        String
+  food_type            FoodType
+  description          String?        @db.Text
+  quantity             Float
+  quantity_unit        String
+  number_of_people     Int?
+  prepared_at          DateTime
+  expiry_time          DateTime
+  pickup_address       String
+  pickup_city          String?
+  pickup_state         String?
+  pickup_country       String?
+  pickup_latitude      Float?
+  pickup_longitude     Float?
+  postal_code          String?
+  pickup_time          DateTime?
+  pickup_contact_name  String?
+  pickup_contact_phone String?
+  max_pickup_delay     Int?
+  special_instructions String?        @db.Text
+  status               DonationStatus @default(AVAILABLE)
+
+  // Standard Audit Fields
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+  created_by String?
+  updated_by String?
+
+  // Relations
+  donor             users               @relation(fields: [donor_id], references: [id], onDelete: Restrict)
+  donation_images   donation_images[]
+  donation_requests donation_requests[]
+
+  // Indexes
+  @@index([donor_id], map: "idx_food_donations_donor_id")
+  @@index([status], map: "idx_food_donations_status")
+  @@index([food_category], map: "idx_food_donations_food_category")
+  @@index([food_type], map: "idx_food_donations_food_type")
+  @@index([created_at], map: "idx_food_donations_created_at")
+  @@index([expiry_time], map: "idx_food_donations_expiry_time")
+  @@index([pickup_latitude, pickup_longitude], map: "idx_food_donations_coordinates")
+}
+
+model donation_images {
+  id            String  @id @default(uuid())
+  donation_id   String
+  image_url     String
+  public_id     String?
+  display_order Int     @default(0)
+
+  // Standard Audit Fields
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+  created_by String?
+  updated_by String?
+
+  // Relations
+  donation food_donations @relation(fields: [donation_id], references: [id], onDelete: Cascade)
+
+  // Indexes
+  @@index([donation_id], map: "idx_donation_images_donation_id")
+}
+
+model ngos {
+  id                       String    @id @default(uuid())
+  user_id                  String    @unique(map: "uq_ngos_user_id")
+  organization_name        String
+  registration_number      String    @unique(map: "uq_ngos_registration_number")
+  license_number           String?
+  organization_type        String?
+  website                  String?
+  description              String?   @db.Text
+  email                    String?
+  phone                    String?
+  address                  String?
+  city                     String?
+  state                    String?
+  country                  String?
+  postal_code              String?
+  latitude                 Float?
+  longitude                Float?
+  operating_radius         Float?
+  working_days             String?
+  working_hours            String?
+  emergency_contact        String?
+  registration_certificate String?
+  government_id            String?
+  ngo_license              String?
+  organization_logo        String?
+  status                   NgoStatus @default(PENDING)
+  verified                 Boolean   @default(false)
+
+  // Standard Audit Fields
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+  created_by String?
+  updated_by String?
+
+  // Relations
+  user              users               @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  donation_requests donation_requests[]
+
+  // Indexes
+  @@index([status], map: "idx_ngos_status")
+  @@index([verified], map: "idx_ngos_verified")
+}
+
+model volunteers {
+  id                     String    @id @default(uuid())
+  user_id                String    @unique(map: "uq_volunteers_user_id")
+  vehicle_type           String?
+  vehicle_number         String?
+  driving_license_number String?
+  emergency_contact      String?
+  operating_radius       Float?    @default(10.0)
+  online_status          String    @default("OFFLINE") // 'ONLINE' | 'OFFLINE' | 'BUSY' | 'BREAK'
+  last_location_update   DateTime?
+  current_address        String?
+  city                   String?
+  state                  String?
+  country                String?
+  availability           Boolean   @default(true)
+  current_latitude       Float?
+  current_longitude      Float?
+  is_online              Boolean   @default(false)
+
+  // Standard Audit Fields
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+  created_by String?
+  updated_by String?
+
+  // Relations
+  user          users                     @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  deliveries    deliveries[]
+  location_logs volunteer_location_logs[]
+
+  // Indexes
+  @@index([is_online], map: "idx_volunteers_is_online")
+  @@index([online_status], map: "idx_volunteers_online_status")
+  @@index([current_latitude, current_longitude], map: "idx_volunteers_coordinates")
+}
+
+model donation_requests {
+  id             String        @id @default(uuid())
+  donation_id    String
+  ngo_id         String
+  request_status RequestStatus @default(PENDING)
+  requested_at   DateTime      @default(now())
+  approved_at    DateTime?
+  rejected_at    DateTime?
+  remarks        String?       @db.Text
+
+  // Standard Audit Fields
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+  created_by String?
+  updated_by String?
+
+  // Relations
+  donation food_donations @relation(fields: [donation_id], references: [id], onDelete: Cascade)
+  ngo      ngos           @relation(fields: [ngo_id], references: [id], onDelete: Restrict)
+  delivery deliveries?
+
+  // Indexes
+  @@index([donation_id], map: "idx_donation_requests_donation_id")
+  @@index([ngo_id], map: "idx_donation_requests_ngo_id")
+  @@index([request_status], map: "idx_donation_requests_request_status")
+}
+
+model deliveries {
+  id                  String         @id @default(uuid())
+  donation_request_id String         @unique(map: "uq_deliveries_donation_request_id")
+  volunteer_id        String?
+  pickup_time         DateTime?
+  delivery_time       DateTime?
+  completion_time     DateTime?
+  delivery_status     DeliveryStatus @default(ASSIGNED)
+  pickup_photo        String?
+  delivery_photo      String?
+  proof_signature     String?
+  delivery_notes      String?        @db.Text
+  pickup_latitude     Float?
+  pickup_longitude    Float?
+  delivery_latitude   Float?
+  delivery_longitude  Float?
+
+  // Standard Audit Fields
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+  created_by String?
+  updated_by String?
+
+  // Relations
+  donation_request donation_requests @relation(fields: [donation_request_id], references: [id], onDelete: Restrict)
+  volunteer        volunteers?       @relation(fields: [volunteer_id], references: [id], onDelete: Restrict)
+  feedback         feedback?
+
+  // Indexes
+  @@index([volunteer_id], map: "idx_deliveries_volunteer_id")
+  @@index([delivery_status], map: "idx_deliveries_delivery_status")
+  @@index([created_at], map: "idx_deliveries_created_at")
+}
+
+model notifications {
+  id      String           @id @default(uuid())
+  user_id String
+  title   String
+  message String           @db.Text
+  type    NotificationType @default(INFO)
+  is_read Boolean          @default(false)
+  sent_at DateTime         @default(now())
+
+  // Standard Audit Fields
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+  created_by String?
+  updated_by String?
+
+  // Relations
+  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  // Indexes
+  @@index([user_id], map: "idx_notifications_user_id")
+  @@index([is_read], map: "idx_notifications_is_read")
+}
+
+model complaints {
+  id             String  @id @default(uuid())
+  user_id        String
+  subject        String
+  description    String  @db.Text
+  status         String  @default("PENDING")
+  admin_response String? @db.Text
+
+  // Standard Audit Fields
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+  created_by String?
+  updated_by String?
+
+  // Relations
+  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  // Indexes
+  @@index([user_id], map: "idx_complaints_user_id")
+  @@index([status], map: "idx_complaints_status")
+}
+
+model feedback {
+  id          String  @id @default(uuid())
+  delivery_id String  @unique(map: "uq_feedback_delivery_id")
+  rating      Int
+  review      String? @db.Text
+
+  // Standard Audit Fields
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+  created_by String?
+  updated_by String?
+
+  // Relations
+  delivery deliveries @relation(fields: [delivery_id], references: [id], onDelete: Cascade)
+
+  // Indexes
+  @@index([rating], map: "idx_feedback_rating")
+}
+
+model audit_logs {
+  id         String  @id @default(uuid())
+  user_id    String?
+  action     String
+  table_name String
+  record_id  String
+  old_values String? @db.Text
+  new_values String? @db.Text
+  ip_address String?
+  user_agent String?
+
+  // Standard Audit Fields
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+  created_by String?
+  updated_by String?
+
+  // Relations
+  user users? @relation(fields: [user_id], references: [id], onDelete: SetNull)
+
+  // Indexes
+  @@index([user_id], map: "idx_audit_logs_user_id")
+  @@index([table_name], map: "idx_audit_logs_table_name")
+  @@index([created_at], map: "idx_audit_logs_created_at")
+}
+
+model system_settings {
+  id            String  @id @default(uuid())
+  setting_key   String  @unique(map: "uq_system_settings_setting_key")
+  setting_value String  @db.Text
+  description   String?
+
+  // Standard Audit Fields
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+  created_by String?
+  updated_by String?
+}
+
+model refresh_tokens {
+  id          String   @id @default(uuid())
+  user_id     String
+  token       String   @unique(map: "uq_refresh_tokens_token") @db.VarChar(500)
+  expires_at  DateTime
+  is_revoked  Boolean  @default(false)
+  device_info String?  @db.Text
+  ip_address  String?
+
+  // Standard Audit Fields
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+  created_by String?
+  updated_by String?
+
+  // Relations
+  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  // Indexes
+  @@index([user_id], map: "idx_refresh_tokens_user_id")
+}
+
+model volunteer_location_logs {
+  id           String   @id @default(uuid())
+  volunteer_id String
+  latitude     Float
+  longitude    Float
+  logged_at    DateTime @default(now())
+
+  // Relations
+  volunteer volunteers @relation(fields: [volunteer_id], references: [id], onDelete: Cascade)
+
+  // Indexes
+  @@index([volunteer_id], map: "idx_vol_loc_logs_vol_id")
+  @@index([logged_at], map: "idx_vol_loc_logs_logged_at")
+}
