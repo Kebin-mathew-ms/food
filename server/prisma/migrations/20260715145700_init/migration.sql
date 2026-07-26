@@ -1,4 +1,3 @@
-﻿-- CreateTable
 CREATE TABLE `users` (
     `id` VARCHAR(191) NOT NULL,
     `full_name` VARCHAR(191) NOT NULL,
@@ -36,7 +35,6 @@ CREATE TABLE `users` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- CreateTable
 CREATE TABLE `food_donations` (
     `id` VARCHAR(191) NOT NULL,
     `donor_id` VARCHAR(191) NOT NULL,
@@ -78,7 +76,6 @@ CREATE TABLE `food_donations` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- CreateTable
 CREATE TABLE `donation_images` (
     `id` VARCHAR(191) NOT NULL,
     `donation_id` VARCHAR(191) NOT NULL,
@@ -95,7 +92,6 @@ CREATE TABLE `donation_images` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- CreateTable
 CREATE TABLE `ngos` (
     `id` VARCHAR(191) NOT NULL,
     `user_id` VARCHAR(191) NOT NULL,
@@ -117,7 +113,6 @@ CREATE TABLE `ngos` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- CreateTable
 CREATE TABLE `volunteers` (
     `id` VARCHAR(191) NOT NULL,
     `user_id` VARCHAR(191) NOT NULL,
@@ -139,7 +134,6 @@ CREATE TABLE `volunteers` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- CreateTable
 CREATE TABLE `donation_requests` (
     `id` VARCHAR(191) NOT NULL,
     `donation_id` VARCHAR(191) NOT NULL,
@@ -161,7 +155,6 @@ CREATE TABLE `donation_requests` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- CreateTable
 CREATE TABLE `deliveries` (
     `id` VARCHAR(191) NOT NULL,
     `donation_request_id` VARCHAR(191) NOT NULL,
@@ -187,7 +180,6 @@ CREATE TABLE `deliveries` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- CreateTable
 CREATE TABLE `notifications` (
     `id` VARCHAR(191) NOT NULL,
     `user_id` VARCHAR(191) NOT NULL,
@@ -207,7 +199,6 @@ CREATE TABLE `notifications` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- CreateTable
 CREATE TABLE `complaints` (
     `id` VARCHAR(191) NOT NULL,
     `user_id` VARCHAR(191) NOT NULL,
@@ -226,7 +217,6 @@ CREATE TABLE `complaints` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- CreateTable
 CREATE TABLE `feedback` (
     `id` VARCHAR(191) NOT NULL,
     `delivery_id` VARCHAR(191) NOT NULL,
@@ -243,7 +233,6 @@ CREATE TABLE `feedback` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- CreateTable
 CREATE TABLE `audit_logs` (
     `id` VARCHAR(191) NOT NULL,
     `user_id` VARCHAR(191) NULL,
@@ -266,7 +255,6 @@ CREATE TABLE `audit_logs` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- CreateTable
 CREATE TABLE `system_settings` (
     `id` VARCHAR(191) NOT NULL,
     `setting_key` VARCHAR(191) NOT NULL,
@@ -282,7 +270,6 @@ CREATE TABLE `system_settings` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- CreateTable
 CREATE TABLE `refresh_tokens` (
     `id` VARCHAR(191) NOT NULL,
     `user_id` VARCHAR(191) NOT NULL,
@@ -302,42 +289,29 @@ CREATE TABLE `refresh_tokens` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- AddForeignKey
 ALTER TABLE `food_donations` ADD CONSTRAINT `food_donations_donor_id_fkey` FOREIGN KEY (`donor_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
--- AddForeignKey
 ALTER TABLE `donation_images` ADD CONSTRAINT `donation_images_donation_id_fkey` FOREIGN KEY (`donation_id`) REFERENCES `food_donations`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
--- AddForeignKey
 ALTER TABLE `ngos` ADD CONSTRAINT `ngos_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
--- AddForeignKey
 ALTER TABLE `volunteers` ADD CONSTRAINT `volunteers_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
--- AddForeignKey
 ALTER TABLE `donation_requests` ADD CONSTRAINT `donation_requests_donation_id_fkey` FOREIGN KEY (`donation_id`) REFERENCES `food_donations`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
--- AddForeignKey
 ALTER TABLE `donation_requests` ADD CONSTRAINT `donation_requests_ngo_id_fkey` FOREIGN KEY (`ngo_id`) REFERENCES `ngos`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
--- AddForeignKey
 ALTER TABLE `deliveries` ADD CONSTRAINT `deliveries_donation_request_id_fkey` FOREIGN KEY (`donation_request_id`) REFERENCES `donation_requests`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
--- AddForeignKey
 ALTER TABLE `deliveries` ADD CONSTRAINT `deliveries_volunteer_id_fkey` FOREIGN KEY (`volunteer_id`) REFERENCES `volunteers`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
--- AddForeignKey
 ALTER TABLE `notifications` ADD CONSTRAINT `notifications_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
--- AddForeignKey
 ALTER TABLE `complaints` ADD CONSTRAINT `complaints_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
--- AddForeignKey
 ALTER TABLE `feedback` ADD CONSTRAINT `feedback_delivery_id_fkey` FOREIGN KEY (`delivery_id`) REFERENCES `deliveries`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
--- AddForeignKey
 ALTER TABLE `audit_logs` ADD CONSTRAINT `audit_logs_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
--- AddForeignKey
 ALTER TABLE `refresh_tokens` ADD CONSTRAINT `refresh_tokens_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
