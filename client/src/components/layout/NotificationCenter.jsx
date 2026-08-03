@@ -29,7 +29,7 @@ export default function NotificationCenter() {
     // Connect to Socket server
     const socket = io('http://localhost:5000', {
       auth: {
-        token: localStorage.getItem('token') || '',
+        token: localStorage.getItem('accessToken') || '',
       },
     });
 

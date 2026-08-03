@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
       } catch (err) {
         // Silent token rotation will happen automatically inside the Axios interceptor
         // If it completely fails, the auth:logout event listener below handles it.
-        logger.error('Failed to restore authentication session:', err);
+        console.error('Failed to restore authentication session:', err);
       } finally {
         setLoading(false);
       }

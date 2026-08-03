@@ -53,7 +53,11 @@ export default function LiveMap({ trackingPoints = [] }) {
 
   useEffect(() => {
     // Connect Socket.io client instance
-    const socket = io('http://localhost:5000');
+    const socket = io('http://localhost:5000', {
+      auth: {
+        token: localStorage.getItem('accessToken') || '',
+      },
+    });
 
     // Join room for active tracking updates
     livePoints.forEach((pt) => {
