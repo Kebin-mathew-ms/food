@@ -34,9 +34,33 @@ app.use(helmet());
 app.use(compression());
 
 // Enable Cross-Origin Resource Sharing (CORS)
+const allowedOrigins = [
+  env.clientUrl,
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:3000',
+];
+
 app.use(
   cors({
-    origin: env.clientUrl,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (e.g. mobile apps, curl, Postman)
+      if (!origin) return callback(null, true);
+
+      if (env.nodeEnv === 'development') {
+        // In development, allow any localhost regardless of port
+        if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
+          return callback(null, true);
+        }
+      }
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error(`CORS: Origin '${origin}' not allowed.`));
+    },
     credentials: true,
   })
 );
